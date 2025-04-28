@@ -3,6 +3,8 @@ import { AuthServiceController } from './auth-service.controller';
 import { AuthServiceService } from './auth-service.service';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from './user/user.module';
+import { User } from './user/entities/user.entity';
 
 @Module({
   imports: [
@@ -18,12 +20,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       username: 'postgres',
       password: '123',
       database: 'test_db',
-      entities: [],
+      entities: [User],
       synchronize: true,
       logging: true,
-      logger: 'advanced-console',
+     
     }),
-    TypeOrmModule.forFeature([]),
+    UserModule,
  
 
   ],
