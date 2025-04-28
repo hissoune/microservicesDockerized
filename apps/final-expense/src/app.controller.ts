@@ -12,7 +12,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Get('health')
-    getHello(): string {
+    healthcheck(): string {
       return this.appService.getHello();
     }
 
