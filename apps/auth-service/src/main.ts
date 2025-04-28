@@ -14,8 +14,8 @@ async function bootstrap() {
 
   const serviceId = 'auth-service';
   const serviceName = 'auth-service';
-  const serviceAddress = process.env.SERVICE_ADDRESS || 'localhost';
-  const servicePort = parseInt(process.env.SERVICE_PORT || '3000', 10);
+  const serviceAddress = process.env.AUTH_SERVICE_ADDRESS || 'localhost';
+  const servicePort = parseInt(process.env.AUTH_SERVICE_PORT || '3001', 10);
 
   const service = {
     id: serviceId,
@@ -26,7 +26,12 @@ async function bootstrap() {
   };
 
   try {
-    await consul.agent.service.register(service);
+    await consul.agent.service.register({...service, check: {
+      http: `http://${process.env.AUTH_SERVICE_ADDRESS || "localhost"}:${servicePort}/health`, 
+      interval: "10s",
+      name: `${serviceName}-health-check`,
+      timeout: "5s",
+    },});
     console.log(`Service ${serviceName} registered with Consul`);
   } catch (err) {
     console.error('Error registering service with Consul:', err);
@@ -47,6 +52,6 @@ async function bootstrap() {
 
 
 
-  await app.listen(process.env.port ?? 3001);
+  await app.listen(process.env.AUTH_SERVICE_PORT ?? 3001);
 }
 bootstrap();
