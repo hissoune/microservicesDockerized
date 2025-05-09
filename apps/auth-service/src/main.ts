@@ -2,8 +2,8 @@ import { NestFactory } from '@nestjs/core';
 import { AuthServiceModule } from './auth-service.module';
 import Consul = require('consul');
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
-import * as cors from 'cors';
 async function bootstrap() {
+  
   const app = await NestFactory.create(AuthServiceModule);
 
  
@@ -43,9 +43,11 @@ async function bootstrap() {
         urls: [process.env.RABBITMQ_URL || "amqp://localhost:5672/"],
         queue: "auth_queue",
         queueOptions: {
-          durable: false,
+          durable: true,
         },
+     
       },
+      
   });
   authMicroservice.listen();
 
