@@ -7,7 +7,10 @@ import axios from 'axios';
 @Controller()
 export class AppController {
 
-  private consul =  new Consul;
+  private   consul = new Consul({
+    host: process.env.CONSUL_HOST,
+    port: parseInt(process.env.CONSUL_PORT || '8500', 10),
+  });
 
   constructor(private readonly appService: AppService) {}
 
