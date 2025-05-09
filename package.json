@@ -4,9 +4,10 @@
   "description": "",
   "author": "",
   "private": true,
+  "workspaces": ["apps/*"],
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "nest build auth-service && nest build final-expense",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
     "start:dev": "concurrently \" npm run start:dev:final-expense\" \" npm run start:dev:auth-service\"",
