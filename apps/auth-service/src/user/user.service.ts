@@ -15,12 +15,9 @@ export class UserService {
   }
 
  async findAll() {
-    const promises: Promise<User[]>[] = [];
-
-     for (let i = 0; i < 100000; i++) {
-      promises.push(this.usersRepository.find({where:{name:"2"}}));
-     }
-    return await Promise.all(promises)
+   
+  
+    return await this.usersRepository.find({where:{name:"2"}})
   }
 
   findOne(id: number) {
