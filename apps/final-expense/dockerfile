@@ -1,0 +1,28 @@
+# Stage 1: Build
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Copy the whole monorepo
+COPY . .
+
+# Install all dependencies (monorepo-aware)
+RUN npm install
+
+# Build just this service
+RUN npm run build final-expense
+# Stage 2: Runtime
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy built files only for this service
+COPY --from=builder /app/dist/apps/final-expense /app/dist/apps/final-expense
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+ENV NODE_ENV=production
+
+
+
+CMD ["node", "dist/apps/final-expense/main"]
