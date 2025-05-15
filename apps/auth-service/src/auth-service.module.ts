@@ -22,8 +22,7 @@ import { User } from './user/entities/user.entity';
       database: process.env.DB_NAME || 'dbname',
       entities: [User],
       synchronize: true,
-      logging: true,
-      logger: 'advanced-console',
+  
     }),
     
     UserModule,
