@@ -5,10 +5,12 @@ import { UpdateUserDto } from './dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  private readonly logtail: any;
+  constructor(private readonly userService: UserService) {
+  }
 
   @Post()
-  create(@Body() createUserDto: any) {   
+  create(@Body() createUserDto: CreateUserDto) {   
     console.log("gfnghngd",createUserDto);
      
     return this.userService.create(createUserDto);
@@ -16,6 +18,7 @@ export class UserController {
 
   @Get()
   findAll() {
+    this.logtail.info('🔥 Log from NestJS!', { user: 'Khali'})
     return this.userService.findAll();
   }
  
