@@ -3,15 +3,25 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { LogtailService } from '../logtail/logtail.service';
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User)
-  private usersRepository: Repository<User>,) {}
+  private usersRepository: Repository<User>,
+   private readonly loggService : LogtailService
+) {}
 
-  create(createUserDto:any) {
-    
-    return this.usersRepository.save(createUserDto);
+ async create(createUserDto:any) {
+     try {
+      const newuser = await this.usersRepository.save(createUserDto);
+        this.loggService.info(`user with id ${newuser.id} is created `, { user: createUserDto });
+         return newuser;
+     } catch (error) {
+      this.loggService.error(`error while creating user`, { error });
+      throw new Error('Error creating user'); 
+     }
+   
   }
 
  async findAll() {
