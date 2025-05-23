@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user/entities/user.entity';
+import { LogtailModule } from './logtail/logtail.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { User } from './user/entities/user.entity';
      isGlobal: true,
       envFilePath: ['.env'],
      }),
+
   
      TypeOrmModule.forRoot({
       type: 'postgres',
@@ -26,9 +28,15 @@ import { User } from './user/entities/user.entity';
     }),
     
     UserModule,
+    LogtailModule,
+
 
   ],
   controllers: [AuthServiceController],
-  providers: [AuthServiceService],
+  providers: [
+    AuthServiceService,
+  
+
+  ],
 })
 export class AuthServiceModule {}
