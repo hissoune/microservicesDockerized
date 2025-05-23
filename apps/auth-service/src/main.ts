@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AuthServiceModule } from './auth-service.module';
 import Consul = require('consul');
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+
 async function bootstrap() {
   
   const app = await NestFactory.create(AuthServiceModule);
@@ -56,7 +57,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   });
-
 
   await app.listen(process.env.AUTH_SERVICE_PORT ?? 3001);
 }
