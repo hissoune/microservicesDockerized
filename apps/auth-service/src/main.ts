@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AuthServiceModule } from './auth-service.module';
 import Consul = require('consul');
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   
@@ -57,6 +58,12 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     preflightContinue: false,
   });
+  app.useGlobalPipes(new ValidationPipe({
+    transform: true,
+    whitelist: true,
+    forbidNonWhitelisted: true,
+  
+  }));
 
   await app.listen(process.env.AUTH_SERVICE_PORT ?? 3001);
 }
