@@ -15,7 +15,13 @@ export class UserService {
  async create(createUserDto:any) {
      try {
       const newuser = await this.usersRepository.save(createUserDto);
-        this.loggService.info(`user with id ${newuser.id} is created `, { user: createUserDto });
+        this.loggService.info(`user with id ${newuser.id} is created `, {
+              userId: newuser.id,
+              email: newuser.email,
+              timestamp: new Date().toISOString(),
+              service: 'UserService',
+              method: 'create',
+            });
          return newuser;
      } catch (error) {
       this.loggService.error(`error while creating user`, { error });
