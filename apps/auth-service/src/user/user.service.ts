@@ -1,18 +1,21 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { LogtailService } from '../logtail/logtail.service';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User)
   private usersRepository: Repository<User>,
-   private readonly loggService : LogtailService
+   private readonly loggService : LogtailService,
+   @Inject('N8N_SERVICE')  private readonly n8nService :ClientProxy
 ) {}
 
  async create(createUserDto:any) {
+
      try {
       const newuser = await this.usersRepository.save(createUserDto);
         this.loggService.info(`user with id ${newuser.id} is created `, {
@@ -22,6 +25,7 @@ export class UserService {
               service: 'UserService',
               method: 'create',
             });
+        this.n8nService.emit('user_created', newuser);
          return newuser;
      } catch (error) {
       this.loggService.error(`error while creating user`, { error });
