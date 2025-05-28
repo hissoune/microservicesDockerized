@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
 import { N8nServiceService } from './n8n-service.service';
+import { EventPattern } from '@nestjs/microservices';
 
 @Controller()
 export class N8nServiceController {
@@ -47,4 +48,24 @@ export class N8nServiceController {
 
   }
 
+@Patch('activate-workflow/:id')
+  async activateWorkflow(@Param() workflowId: any) {
+    console.log("Activating workflow with ID:", workflowId.id);
+    
+    return this.n8nServiceService.activateWorkflow(workflowId.id);
+  }
+
+  @Patch('deactivate-workflow/:id')
+  async deactivateWorkflow(@Param() workflowId: any) {
+
+    console.log("Deactivating workflow with ID:", workflowId.id);
+    
+    return this.n8nServiceService.deactivateWorkflow(workflowId.id);
+  }
+ 
+ @EventPattern('user_created')
+  async handleWorkflowCreated(data: any) {
+    console.log('Workflow created event received:', data);
+    this.n8nServiceService.handleWorkflowCreated(data);
+  }
 }
