@@ -13,6 +13,7 @@ import { LogtailModule } from './logtail/logtail.module';
      isGlobal: true,
       envFilePath: ['.env'],
      }),
+  
 
   
      TypeOrmModule.forRoot({
