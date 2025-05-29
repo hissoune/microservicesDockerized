@@ -110,7 +110,7 @@ export class N8nServiceService {
     console.log('Workflow created:', data);
 
     await axios.post(
-      `${process.env.N8N_SERVICE_URL}/webhook-test/webhook`,data,
+      `${process.env.N8N_SERVICE_URL}/webhook/webhook`,data,
       {
         headers: {
           'Content-Type': 'application/json',
