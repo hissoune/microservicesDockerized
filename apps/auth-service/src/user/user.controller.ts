@@ -1,9 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { Roles } from '../gurds/roles.decorator';
+import { RolesGuard } from '../gurds/roles.guard';
 
 @Controller('user')
+// @UseGuards(AuthGuard('keycloak') ,RolesGuard)
+
 export class UserController {
   private readonly logtail: any;
   constructor(private readonly userService: UserService) {
@@ -16,11 +21,16 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    this.logtail.info('🔥 Log from NestJS!', { user: 'Khali'})
-    return this.userService.findAll();
+  @Post('login')
+  login(@Body() createUserDto: CreateUserDto) {
+    return this.userService.login(createUserDto);
   }
+// @Roles('hhh')
+@Get()
+findAll() {
+  this.logtail.info('🔥 Log from NestJS!', { user: 'Khali'})
+  return this.userService.findAll();
+}
  
   @Get(':id')
   findOne(@Param('id') id: number) {
