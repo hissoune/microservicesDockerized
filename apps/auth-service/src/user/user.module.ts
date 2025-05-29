@@ -6,10 +6,13 @@ import { User } from './entities/user.entity';
 import { LogtailModule } from '../logtail/logtail.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigModule } from '@nestjs/config';
+import { PassportModule } from '@nestjs/passport';
+import { KeycloakStrategy } from './keycloak.strategy';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User]),
+    PassportModule.register({ defaultStrategy: 'keycloak' }),
     LogtailModule,
       ConfigModule.forRoot({
       isGlobal: true,
@@ -32,6 +35,6 @@ import { ConfigModule } from '@nestjs/config';
       ]),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService,KeycloakStrategy],
 })
 export class UserModule {}
