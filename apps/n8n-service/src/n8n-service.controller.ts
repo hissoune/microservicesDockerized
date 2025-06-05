@@ -16,7 +16,12 @@ export class N8nServiceController {
     return this.n8nServiceService.getWorkflows();
   }
 
-
+@Get('get-analitics')
+  async getAnalitics() {
+   
+    
+    return this.n8nServiceService.getAnalitics();
+  }
 
   @Get('get-workflow/:id')
   async getWorkflow(@Param() param: any) {
