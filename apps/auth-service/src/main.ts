@@ -53,11 +53,11 @@ async function bootstrap() {
   });
   authMicroservice.listen();
 
-  app.enableCors({
-    origin: 'localhost:3000',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-  });
+  // app.enableCors({
+  //   origin: 'localhost:3000',
+  //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  //   preflightContinue: false,
+  // });
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
     whitelist: true,
