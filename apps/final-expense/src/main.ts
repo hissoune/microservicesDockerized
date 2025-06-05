@@ -7,6 +7,13 @@ async function bootstrap() {
 
   app.useGlobalInterceptors(new LogginInterceptor());
 
+   
+  // Enable CORS for all origins
+  app.enableCors({
+    origin: '*', // Allow all origins
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allow specific HTTP methods
+    allowedHeaders: 'Content-Type, Accept', // Allow specific headers
+  });
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
