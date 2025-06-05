@@ -2,28 +2,44 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@n
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { Roles } from '../gurds/roles.decorator';
-import { RolesGuard } from '../gurds/roles.guard';
+import { InjectMetric } from '@willsoto/nestjs-prometheus';
+import { Counter } from 'prom-client';
+
 
 @Controller('user')
 // @UseGuards(AuthGuard('keycloak') ,RolesGuard)
 
 export class UserController {
   private readonly logtail: any;
-  constructor(private readonly userService: UserService) {
-  }
+  constructor(private readonly userService: UserService,
+     @InjectMetric('api_request_count') private counter: Counter<string>,
+  ) {}
+  
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {   
-    console.log("gfnghngd",createUserDto);
-     
-    return this.userService.create(createUserDto);
+ async create(@Body() createUserDto: CreateUserDto) {
+        this.counter.inc({ method: 'POST', path: 'register' });
+    try {
+        const result =  await    this.userService.create(createUserDto);
+        this.counter.inc({ method: 'POST', path: 'register', status: 'success' });
+        return result;
+      } catch (error) {
+        this.counter.inc({ method: 'POST', path: 'register', status: 'failure' });
+        throw error;
+    }
   }
 
   @Post('login')
-  login(@Body() createUserDto: CreateUserDto) {
-    return this.userService.login(createUserDto);
+  async login(@Body() createUserDto: CreateUserDto) {
+    this.counter.inc({ method: 'POST', path: 'login' });
+   try {
+    const result = await this.userService.login(createUserDto);
+    this.counter.inc({ method: 'POST', path: 'login', status: 'success' });
+    return result;
+  } catch (error) {
+    this.counter.inc({ method: 'POST', path: 'login', status: 'failure' });
+    throw error;
+  }
   }
 // @Roles('hhh')
 @Get()
