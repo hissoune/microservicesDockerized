@@ -10,6 +10,9 @@ import { PassportModule } from '@nestjs/passport';
 import { KeycloakStrategy } from './keycloak.strategy';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { Counter } from 'prom-client';
+import { KeycloakHelper } from '../helpers/keycloak.helper';
+import { RoleHasPermissionService } from '../role_has_permission/role_has_permission.service';
+import { RoleHasPermission } from '../role_has_permission/entities/role_has_permission.entity';
 
 export const apiRequestCounter = new Counter({
   name: 'api_request_count',
@@ -19,13 +22,14 @@ export const apiRequestCounter = new Counter({
 @Module({
   imports: [
 PrometheusModule.register(),
-    TypeOrmModule.forFeature([User]),
+    TypeOrmModule.forFeature([User, RoleHasPermission]),
     PassportModule.register({ defaultStrategy: 'keycloak' }),
     LogtailModule,
       ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env'],
     }),
+    
        ClientsModule.register(
       [
         {
@@ -48,8 +52,10 @@ PrometheusModule.register(),
       provide: 'PROM_METRIC_API_REQUEST_COUNT',
       useValue: apiRequestCounter,
     },
+    KeycloakHelper,
+    RoleHasPermissionService
   ],
-    exports: ['PROM_METRIC_API_REQUEST_COUNT'],
+    exports: ['PROM_METRIC_API_REQUEST_COUNT',KeycloakHelper,RoleHasPermissionService],
 
 })
 export class UserModule {}

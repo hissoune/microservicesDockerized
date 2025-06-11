@@ -6,50 +6,29 @@ import { Repository } from 'typeorm';
 import { LogtailService } from '../logtail/logtail.service';
 import { ClientProxy } from '@nestjs/microservices';
 import axios from 'axios';
+import { KeycloakHelper } from '../helpers/keycloak.helper';
 
 @Injectable()
 export class UserService {
   constructor(@InjectRepository(User)
   private usersRepository: Repository<User>,
    private readonly loggService : LogtailService,
-   @Inject('N8N_SERVICE')  private readonly n8nService :ClientProxy
+   @Inject('N8N_SERVICE')  private readonly n8nService :ClientProxy,
+   private readonly keycloakhelper:KeycloakHelper,
 ) {}
 
- private keycloakUrl = `${process.env.KEYCLOAK_URL}/realms/${process.env.KEYCKLOAK_REALM}/protocol/openid-connect/token`;
-  private keycloakAdminUrl = `${process.env.KEYCLOAK_URL}/admin/realms/${process.env.KEYCKLOAK_REALM}/users`;
-  private clientId = process.env.KEYCLOAK_CLIENT_ID ;
-  private clientSecret = process.env.KEYCLOAK_CLIENT_SECRET;
-  private grantType = process.env.KEYCLOAK_GRANT_TYPE ;
-  private grantTypeAdmin = process.env.KEYCLOAK_GRANT_TYPE_ADMIN ;
+ 
 
 
 
-   async getAdminToken(): Promise<string> {
-    try {
-      const response = await axios.post(
-        this.keycloakUrl,
-        new URLSearchParams({
-          grant_type: this.grantTypeAdmin || 'client_credentials',
-          client_id: this.clientId || 'admin-cli',
-          client_secret:  this.clientSecret || 'your-client-secret',
-        }),
-        {
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        },
-      );
-      return response.data.access_token;
-    } catch (error) {
-      throw new HttpException('Failed to get admin token', 500);
-    }
-  }
 
 
  async create(createUserDto:any) {
 
 try{
-        const token = await this.getAdminToken();
+        const token = await this.keycloakhelper.getAdminToken();
         const response = await axios.post(
-          this.keycloakAdminUrl,
+          this.keycloakhelper.keycloakAdminUrl,
           {
               username: createUserDto.name,
               email: createUserDto.email,
@@ -95,11 +74,11 @@ try{
   async login(createUserDto: any) {
     try {
       const response = await axios.post(
-        this.keycloakUrl,
+        this.keycloakhelper.keycloakUrl,
         new URLSearchParams({
-          grant_type: this.grantType || 'password',
-          client_id: this.clientId || 'your-client-id',
-          client_secret: this.clientSecret || 'your-client-secret',
+          grant_type: this.keycloakhelper.grantType || 'password',
+          client_id: this.keycloakhelper.clientId || 'your-client-id',
+          client_secret: this.keycloakhelper.clientSecret || 'your-client-secret',
           username: createUserDto.name,
           password: createUserDto.password,
         }),
@@ -130,9 +109,26 @@ try{
     }
   }
 
+  async refreshToken(createUserDto: any) {
+    const response = await axios.post(
+      this.keycloakhelper.keycloakUrl,
+      new URLSearchParams({
+        grant_type: this.keycloakhelper.keycloakRefreshGrantType || 'refresh_token',
+        client_id: this.keycloakhelper.clientId || 'your-client-id',
+        client_secret: this.keycloakhelper.clientSecret || 'your-client-secret',
+        refresh_token: createUserDto.refresh_token,
+      }),
+      {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      },
+    );
+
+    return response.data;
+  }
+
  async findAll() {
-   
-  
+
+
     return await this.usersRepository.find({where:{name:"2"}})
   }
 

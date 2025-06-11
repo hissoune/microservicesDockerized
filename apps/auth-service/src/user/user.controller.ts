@@ -4,10 +4,15 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectMetric } from '@willsoto/nestjs-prometheus';
 import { Counter } from 'prom-client';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../gurds/roles.guard';
+import { Roles } from '../gurds/roles.decorator';
+import { PermissionsGuard } from '../gurds/permissions.guard';
+import { Permissions } from '../gurds/permisions.decorator';
 
 
 @Controller('user')
-// @UseGuards(AuthGuard('keycloak') ,RolesGuard)
+// @UseGuards(AuthGuard('keycloak') ,RolesGuard,PermissionsGuard)
 
 export class UserController {
   private readonly logtail: any;
@@ -30,7 +35,7 @@ export class UserController {
   }
 
   @Post('login')
-  async login(@Body() createUserDto: CreateUserDto) {
+  async login(@Body() createUserDto: any) {
     this.counter.inc({ method: 'POST', path: 'login' });
    try {
     const result = await this.userService.login(createUserDto);
@@ -41,10 +46,23 @@ export class UserController {
     throw error;
   }
   }
-// @Roles('hhh')
+ @Post('refresh_token') 
+  async refreshToken(@Body() createUserDto: any) {
+      // this.counter.inc({ method: 'POST', path: 'refresh_token' });
+    try {
+      const result = await this.userService.refreshToken(createUserDto);
+      // this.counter.inc({ method: 'POST', path: 'refresh_token', status: 'success' });
+      return result;
+    } catch (error) {
+      this.counter.inc({ method: 'POST', path: 'refresh_token', status: 'failure' });
+      throw error;
+    }
+    }
+@Roles('hhhh')
+@Permissions('read','write','delete')
 @Get()
 findAll() {
-  this.logtail.info('🔥 Log from NestJS!', { user: 'Khali'})
+  // this.logtail.info('🔥 Log from NestJS!', { user: 'Khali'})
   return this.userService.findAll();
 }
  
